@@ -26,32 +26,53 @@ public sealed class SqlObservationRepository : IObservationRepository
 
 		await EnsureSchemaAsync(connection, ct);
 
-		const string insertSql = @"INSERT INTO [{schema}].Observations
+		const string insertSql = @"INSERT INTO {table}
 (
-	MessageControlId, PatientId, OrderNumber, ObservationId, ObservationText, Value, Units, ReferenceRange, AbnormalFlags, ObservationDateTimeUtc, MessageDateTimeUtc, CreatedAtUtc
+	TIMESTAMP, DATE_TIME_STAMP, DATA_SOURCE_NAME, DEVICE_ID,
+	PATIENT_SEQ_NUM, PATIENT_ID, PATIENT_NAME, PATIENT_NAME_LAST, PATIENT_NAME_MIDDLE, PATIENT_NAME_FIRST, PATIENT_NAME_SEX,
+	PATIENT_ADDRESS, PATIENT_PHONE, PATIENT_RACE,
+	RESULT_SEQ_NUM, RESULT_TEST_ID, RESULT_TEST_ID1, RESULT_TEST_ID2, RESULT_TEST_ID3, RESULT_TEST_ID4,
+	RESULT_VALUE, RESULT_UNIT, RESULT_ABNORMAL, RESULT_STATUS, RESULT_OPERATOR_ID
 )
 VALUES
 (
-	@MessageControlId, @PatientId, @OrderNumber, @ObservationId, @ObservationText, @Value, @Units, @ReferenceRange, @AbnormalFlags, @ObservationDateTimeUtc, @MessageDateTimeUtc, SYSUTCDATETIME()
+	SYSUTCDATETIME(), @MessageDateTimeUtc, @DataSourceName, @DeviceId,
+	@PatientSequenceNumber, @PatientId, @PatientName, @PatientNameLast, @PatientNameMiddle, @PatientNameFirst, @PatientSex,
+	@PatientAddress, @PatientPhone, @PatientRace,
+	@ResultSequenceNumber, @ObservationId, @ObservationId1, @ObservationId2, @ObservationId3, @ObservationId4,
+	@Value, @Units, @AbnormalFlags, @ResultStatus, @ResultOperatorId
 );";
 
 		foreach (var obs in message.Observations)
 		{
 			await connection.ExecuteAsync(
-				insertSql.Replace("{schema}", _schema),
+				insertSql.Replace("{table}", _schema.Contains('.') ? _schema : _schema + ".TEST_DATA").Replace("{schema}", _schema),
 				new
 				{
-					message.MessageControlId,
+					message.MessageDateTimeUtc,
+					message.DataSourceName,
+					message.DeviceId,
+					message.PatientSequenceNumber,
 					message.PatientId,
-					message.OrderNumber,
+					message.PatientName,
+					message.PatientNameLast,
+					message.PatientNameMiddle,
+					message.PatientNameFirst,
+					message.PatientSex,
+					message.PatientAddress,
+					message.PatientPhone,
+					message.PatientRace,
+					ResultSequenceNumber = obs.ResultSequenceNumber,
 					ObservationId = obs.ObservationId,
-					ObservationText = obs.ObservationText,
-					Value = obs.Value,
+					ObservationId1 = obs.ObservationId1,
+					ObservationId2 = obs.ObservationId2,
+					ObservationId3 = obs.ObservationId3,
+					ObservationId4 = obs.ObservationId4,
+					obs.Value,
 					Units = obs.Units,
-					ReferenceRange = obs.ReferenceRange,
 					AbnormalFlags = obs.AbnormalFlags,
-					ObservationDateTimeUtc = obs.ObservationDateTimeUtc,
-					MessageDateTimeUtc = message.MessageDateTimeUtc
+					ResultStatus = obs.ResultStatus,
+					ResultOperatorId = obs.ResultOperatorId
 				},
 				commandTimeout: 30
 			);

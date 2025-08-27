@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AnalyzerLogger.Worker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71dea62553511cbf9e5df76851137b17c87f43f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e5a53f61ea4c1a39297a92843725118d3d3bd780")]
 [assembly: System.Reflection.AssemblyProductAttribute("AnalyzerLogger.Worker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AnalyzerLogger.Worker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
